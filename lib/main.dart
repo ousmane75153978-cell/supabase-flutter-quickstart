@@ -9,12 +9,14 @@ import 'dart:async';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // --- COLLER TES INFORMATIONS SUPABASE ICI ---
+  // --- REMPLACER PAR TES INFORMATIONS SUPABASE ---
+  // Format: https://votre-projet.supabase.co
+  // Clé: Votre clé anon (45+ caractères)
   await Supabase.initialize(
-    url: 'https://upabase.co', 
-    anonKey: 'eiZXhwI',
+    url: 'https://YOUR_PROJECT_ID.supabase.co', 
+    anonKey: 'YOUR_ANON_KEY_HERE',
   );
-  // ---------------------------------------------
+  // -----------------------------------------------
   
   runApp(const MaterialApp(home: ShieldCheckApp()));
 }
@@ -26,7 +28,7 @@ class ShieldCheckApp extends StatefulWidget {
 }
 
 class _ShieldCheckAppState extends State<ShieldCheckApp> {
-  static const platform = MethodChannel('com.example.supabase_flutter_quickstart/device_admin');
+  static const platform = MethodChannel('com.example.shieldcheck_mali/device_admin');
   
   bool estBloque = false;
   String monImei = "Chargement...";
@@ -50,13 +52,21 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
         final androidInfo = await deviceInfo.androidInfo;
         imei = androidInfo.id; // ID unique Android
       } catch (e) {
-        print("Erreur récupération IMEI: $e");
+        debugPrint("Erreur récupération IMEI: \$e");
       }
       
       setState(() => monImei = imei);
 
       // Demander l'activation des droits d'administrateur
       await requestDeviceAdminActivation();
+
+      // Vérifier la connexion Supabase
+      try {
+        final user = Supabase.instance.client.auth.currentUser;
+        debugPrint("Utilisateur Supabase: \${user?.id}");
+      } catch (e) {
+        debugPrint("Erreur connexion Supabase: \$e");
+      }
 
       // Surveillance en temps réel de la base
       realtimeSubscription = Supabase.instance.client
@@ -80,11 +90,11 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
           }
         }
       }, onError: (error) {
-        print("Erreur surveillance base: $error");
+        debugPrint("Erreur surveillance base: \$error");
       });
     } catch (e) {
-      print("Erreur initShieldCheck: $e");
-      setState(() => monImei = "Erreur: $e");
+      debugPrint("Erreur initShieldCheck: \$e");
+      setState(() => monImei = "Erreur: \$e");
     }
   }
 
@@ -92,18 +102,18 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
     try {
       final result = await platform.invokeMethod('requestDeviceAdmin');
       setState(() => adminActivated = result);
-      print("Device Admin activation: $result");
+      debugPrint("Device Admin activation: \$result");
     } catch (e) {
-      print("Erreur activation Device Admin: $e");
+      debugPrint("Erreur activation Device Admin: \$e");
     }
   }
 
   Future<void> lockDeviceScreen() async {
     try {
       await platform.invokeMethod('lockDevice');
-      print("Écran verrouillé avec succès");
+      debugPrint("Écran verrouillé avec succès");
     } catch (e) {
-      print("Erreur verrouillage écran: $e");
+      debugPrint("Erreur verrouillage écran: \$e");
     }
   }
 
@@ -135,7 +145,7 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
       
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        print("Permission GPS refusée");
+        debugPrint("Permission GPS refusée");
         return;
       }
 
@@ -153,9 +163,9 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
           })
           .eq('identifiant', imei);
 
-      print("Position GPS mise à jour: ${position.latitude}, ${position.longitude}");
+      debugPrint("Position GPS mise à jour: \${position.latitude}, \${position.longitude}");
     } catch (e) {
-      print("Erreur mise à jour GPS: $e");
+      debugPrint("Erreur mise à jour GPS: \$e");
     }
   }
 
@@ -187,7 +197,7 @@ class _ShieldCheckAppState extends State<ShieldCheckApp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Système actif.\nVotre IMEI : $monImei",
+              "Système actif.\nVotre IMEI : \$monImei",
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 16),
             ),
