@@ -1,30 +1,31 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
     namespace = "com.example.shieldcheck_mali"
-    compileSdkVersion 34
-    ndkVersion "27.0.11902837"
+    compileSdk 34
+    ndkVersion = "27.0.11902837"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "1.8"
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += "src/main/kotlin"
     }
 
     defaultConfig {
         applicationId "com.example.shieldcheck_mali"
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0.0"
     }
@@ -37,8 +38,5 @@ android {
 }
 
 flutter {
-    source = '../..'
-}
-
-dependencies {
+    source = "../.." 
 }
