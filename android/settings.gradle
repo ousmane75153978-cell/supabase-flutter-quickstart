@@ -6,10 +6,6 @@ pluginManagement {
     }
 }
 
-plugins {
-    id 'dev.flutter.flutter-gradle-plugin' version 'latest' apply false
-}
-
 include ':app'
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
